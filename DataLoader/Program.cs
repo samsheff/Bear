@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -14,7 +14,7 @@ namespace DataLoader
         {
             Program program = new Program();
 
-            Console.WriteLine("id,company_name,company_short_name,inn,company_type,oblast_id,region_type,region_name,street_type,street_name");
+            program.WriteHeader();
 
             foreach (var file in program.GetListOfFiles(program.DataDirectory, @"*.xml"))
             {
@@ -27,6 +27,11 @@ namespace DataLoader
         public string[] GetListOfFiles(string directory, string pattern)
         {
             return System.IO.Directory.GetFiles(directory, pattern, System.IO.SearchOption.AllDirectories);
+        }
+
+        public void WriteHeader()
+        {
+            Console.WriteLine("id|company_name|company_short_name|inn|company_type|oblast_id|region_type|region_name|street_type|street_name|main_activity");
         }
 
         public void ParseDocument(XDocument document)
@@ -52,15 +57,15 @@ namespace DataLoader
                         string streetType = docNode.Element("СведМН").Element("НаселПункт").Attribute("Тип").Value.ToString();
                         string streetName = docNode.Element("СведМН").Element("НаселПункт").Attribute("Наим").Value.ToString();
                         string mainActivity = docNode.Element("СвОКВЭД").Element("СвОКВЭДОсн").Attribute("НаимОКВЭД").Value.ToString();
-                        /*
-                                                var activities = new ArrayList();
-                                                foreach (var element in docNode.Element("СвОКВЭДДоп").Attribute("НаимОКВЭД").Value.ToString())
-                                                {
-                                                    activities.Add(element.Value.ToString());
-                                                }
-                        */
-                        string line = docId + "|" + name + "|" + shortName + "|" + inn + "|" + companyType + "|" + oblastId + "|" + regionType + "|" + regionName + "|" + streetType + "|" + streetName + "" + mainActivity;
-                        Console.WriteLine(line);
+
+                        foreach (var element in docNode.Element("СвОКВЭД").Elements("СвОКВЭДДоп").Attributes("НаимОКВЭД"))
+                        {
+                            mainActivity += " " + element.Value.ToString();
+                        }
+
+                        string line = docId + "|" + name + "|" + shortName + "|" + inn + "|" + companyType + "|" + oblastId + 
+                            "|" + regionType + "|" + regionName + "|" + streetType + "|" + streetName + "|" + mainActivity;
+
                         file.WriteLine(line);
                     }
                     catch
