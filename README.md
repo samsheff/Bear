@@ -1,3 +1,3 @@
-# DataLoader
+# Bear
 
-Another (better?) tool for parsing the XML files containing russian business entities
+A tool for parsing the XML files containing russian business entities. Written in C#
